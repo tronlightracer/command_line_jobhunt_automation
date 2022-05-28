@@ -4,6 +4,15 @@ import psycopg2
 #create argument parser to add entries via command line DONE for the most part
 #create table with psycopg2 for postgres experience
 
+#TODO
+#add update functionality
+#make it so functions arguments are values taken from the command line
+
+#PLAN
+# mabye split up the file so if values are trying to be added you can run one program but if 
+# you're trying to interact with the database by updating or deleting rows you have a 
+# specific program to call command line arguments with to call
+
 parser = argparse.ArgumentParser(description="get db entries")
 
 parser.add_argument("--company-name", help="the company name of the job you just applied to")
