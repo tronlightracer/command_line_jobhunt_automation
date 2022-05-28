@@ -77,17 +77,34 @@ def get_data(company_name):
 #if no argument is passed this still works.. sweet
 get_data(company_name)
 
-cur.execute(f"SELECT COMPANY, POSITION, MOVED_ON, FOLLOW_UP, REACHED_OUT FROM jobhunt WHERE COMPANY='Aevum'")
-conn.commit()
+def del_data(column_name, item):
+    conn = psycopg2.connect(
+    database="zougyhdf",
+    user="zougyhdf",
+    password="IB_jCFj_1SDyLeRlMasIq5bQV2x3UpEJ",
+    host="heffalump.db.elephantsql.com",
+    port="5432",
+    )
+    cur = conn.cursor()
+    #deletes a row where the condition is true. 'WHERE' is the condition or if statement essentially
+    cur.execute(f"DELETE FROM jobhunt WHERE {column_name}='{item}'")
+    print(f"The rows affected are: {cur.rowcount}")
+    conn.commit()
 
-# one way to get the info though I'd prefer to find a more controllable way
-rows = cur.fetchall()
-for row in rows:
-    print(f"Company name: {row[0]}")
-    print(f"Position: {row[1]}")
-    print(f"Moved on or not: {row[2]}")
-    print(f"If you've followed up with the company: {row[3]}")
-    print(f"Reached out or not: {row[4]}")
+del_data("COMPANY", "Google")
+print("Data deleted successfully")
+#the function above does the same thing but dynamically
+# cur.execute(f"SELECT COMPANY, POSITION, MOVED_ON, FOLLOW_UP, REACHED_OUT FROM jobhunt WHERE COMPANY='Aevum'")
+# conn.commit()
+
+# # one way to get the info though I'd prefer to find a more controllable way
+# rows = cur.fetchall()
+# for row in rows:
+#     print(f"Company name: {row[0]}")
+#     print(f"Position: {row[1]}")
+#     print(f"Moved on or not: {row[2]}")
+#     print(f"If you've followed up with the company: {row[3]}")
+#     print(f"Reached out or not: {row[4]}")
 
 
 # cur.execute("SELECT * FROM jobhunt")
