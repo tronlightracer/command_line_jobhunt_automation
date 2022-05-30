@@ -77,6 +77,12 @@ def insert_data():
 
 insert_data()
 
+def get_all_data():
+    conn = make_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM jobhunt")
+
+
 def get_data(company_name):
     conn = make_connection()
     cur = conn.cursor()
@@ -110,7 +116,6 @@ def update_data(column_name, company_name, position, moved_on, follow_up, reache
         cur.execute(f"UPDATE jobhunt SET REACHED_OUT={reached_out} WHERE {column_name}='{company_name}'")
         print("updated reached out column for row {company_name}")
 
-#update_data("COMPANY", "Google", "QA-engineer", None, None, None)
 update_data("COMPANY", argparsed()[0], argparsed()[1], argparsed()[2], argparsed()[3], argparsed()[4])
 
 def del_data(column_name, company_name):
