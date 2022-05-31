@@ -73,7 +73,7 @@ def get_data(company_name):
     conn = psycopg2.connect(
     database="zougyhdf",
     user="zougyhdf",
-    password="IB_jCFj_1SDyLeRlMasIq5bQV2x3UpEJ",
+    password="password",
     host="heffalump.db.elephantsql.com",
     port="5432",
     )
@@ -95,7 +95,7 @@ def del_data(column_name, company_name):
     conn = psycopg2.connect(
     database="zougyhdf",
     user="zougyhdf",
-    password="IB_jCFj_1SDyLeRlMasIq5bQV2x3UpEJ",
+    password="password",
     host="heffalump.db.elephantsql.com",
     port="5432",
     )
@@ -111,7 +111,7 @@ def update_data(column_name, company_name, position, moved_on, follow_up, reache
     conn = psycopg2.connect(
         database="zougyhdf",
         user="zougyhdf",
-        password="IB_jCFj_1SDyLeRlMasIq5bQV2x3UpEJ",
+        password="password",
         host="heffalump.db.elephantsql.com",
         port="5432",
     )
