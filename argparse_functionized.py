@@ -16,13 +16,7 @@ from psycopg2.errors import UniqueViolation
 # specific program to call command line arguments with to call
 
 def make_connection():
-    conn = psycopg2.connect(
-    database="zougyhdf",
-    user="zougyhdf",
-    password="IB_jCFj_1SDyLeRlMasIq5bQV2x3UpEJ",
-    host="heffalump.db.elephantsql.com",
-    port="5432",
-    )
+    conn = "string_data"
     return conn
 
 def drop_table():
@@ -30,7 +24,7 @@ def drop_table():
     cur = conn.cursor()
     cur.execute("DROP TABLE jobhunt")
 
-drop_table()
+#drop_table()
 
 def create_table():
     conn = make_connection()
@@ -96,7 +90,7 @@ def get_data(company_name):
         print(f"Moved on or not: {row[2]}")
         print(f"If you've followed up with the company: {row[3]}")
         print(f"Reached out or not: {row[4]}")
-#if no argument is passed this still works.. sweet
+#if no argument is passed on the command line this still works as there's a placeholder value of None
 #get_data(argparsed()[0])
 
 def update_data(column_name, company_name, position, moved_on, follow_up, reached_out):
