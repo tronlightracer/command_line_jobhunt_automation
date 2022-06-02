@@ -33,7 +33,7 @@ reached_out = args.reached_out
 conn = psycopg2.connect(
     database="zougyhdf",
     user="zougyhdf",
-    password="IB_jCFj_1SDyLeRlMasIq5bQV2x3UpEJ",
+    password="#######",
     host="heffalump.db.elephantsql.com",
     port="5432",
 )
