@@ -47,22 +47,22 @@ class DataBase:
                 DataBase.conn = psycopg2.connect(
                     database="zougyhdf",
                     user="zougyhdf",
-                    password="password",
+                    password="IB_jCFj_1SDyLeRlMasIq5bQV2x3UpEJ",
                     host="heffalump.db.elephantsql.com",
                     port="5432",
                 )
-                DataBase.cur = conn.cursor()
+                DataBase.cur = DataBase.conn.cursor()
             except Exception as error:
                 print(f"Error: Connection not established {error}")
             else:
                 print("Connection Established")
 
     def drop_table(self):
-        cur.execute("DROP TABLE jobhunt")
-        conn.commit()
+        DataBase.cur.execute("DROP TABLE jobhunt")
+        DataBase.conn.commit()
 
     def create_table(self):
-        cur.execute(
+        DataBase.cur.execute(
             """
             CREATE TABLE IF NOT EXISTS jobhunt(
             COMPANY TEXT UNIQUE,
@@ -72,10 +72,10 @@ class DataBase:
             REACHED_OUT BOOL
         )"""
         )
-        conn.commit()
+        DataBase.commit()
 
     def insert_data(self):
-        cur.execute(
+        DataBase.cur.execute(
             "INSERT INTO jobhunt (COMPANY, POSITION, MOVED_ON, FOLLOW_UP, REACHED_OUT) VALUES(%s, %s, %s, %s, %s)",
             (
                 ArgParsed.__new__()[0],
@@ -85,18 +85,18 @@ class DataBase:
                 ArgParsed.__new__()[4],
             ),
         )
-        conn.commit()
+        DataBase.conn.commit()
 
     def get_all_data(self):
-        cur.execute("SELECT * FROM jobhunt")
+        DataBase.cur.execute("SELECT * FROM jobhunt")
 
     def get_data(self, company_name):
         # for whatever reason you need to put single qoutes around the format curly braces
-        cur.execute(
+        DataBase.cur.execute(
             f"SELECT COMPANY, POSITION, MOVED_ON, FOLLOW_UP, REACHED_OUT FROM jobhunt WHERE COMPANY='{company_name}'"
         )
-        conn.commit()
-        rows = cur.fetchall()
+        DataBase.conn.commit()
+        rows = DataBase.cur.fetchall()
         for row in rows:
             print(f"Company name: {row[0]}")
             print(f"Position: {row[1]}")
@@ -111,28 +111,28 @@ class DataBase:
         self, column_name, company_name, position, moved_on, follow_up, reached_out
     ):
         if position:
-            cur.execute(
+            DataBase.cur.execute(
                 f"UPDATE jobhunt SET POSITION='{position}' WHERE {column_name}='{company_name}'"
             )
             print(f"updated position for row {company_name}")
         elif moved_on:
-            cur.execute(
+            DataBase.cur.execute(
                 f"UPDATE jobhunt SET MOVED_ON={moved_on} WHERE {column_name}='{company_name}'"
             )
             print(f"updated moved_on column for  row {company_name}")
         elif follow_up:
-            cur.execute(
+            DataBase.cur.execute(
                 f"UPDATE jobhunt SET FOLLOW_UP={follow_up} WHERE {column_name}='{company_name}'"
             )
             print("updated follow_up column for row {company_name}")
         elif reached_out:
-            cur.execute(
+            DataBase.cur.execute(
                 f"UPDATE jobhunt SET REACHED_OUT={reached_out} WHERE {column_name}='{company_name}'"
             )
             print("updated reached out column for row {company_name}")
 
     def del_data(column_name, company_name):
         # deletes a row where the condition is true. 'WHERE' is the condition or if statement essentially
-        cur.execute(f"DELETE FROM jobhunt WHERE {column_name}='{company_name}'")
-        print(f"The rows affected are: {cur.rowcount}")
-        conn.commit()
+        DataBase.cur.execute(f"DELETE FROM jobhunt WHERE {column_name}='{company_name}'")
+        print(f"The rows affected are: {DataBase.cur.rowcount}")
+        DataBase.conn.commit()
