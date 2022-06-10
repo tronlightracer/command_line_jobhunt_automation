@@ -2,39 +2,25 @@ import argparse
 import psycopg2
 
 
-class ArgParsed:
-    def __init__(self):
-        self.parser = argparse.ArgumentParser(description="get db entries")
-        self.parser.add_argument(
-            "--company_name", help="The company name you've applied to"
-        )
-        self.parser.add_argument("--position", help="Position applied to")
-        self.parser.add_argument("--moved_on", help="Whether the company has moved on")
-        self.parser.add_argument(
-            "--follow_up", help="Whether you've done a follow up or not"
-        )
-        self.parser.add_argument(
-            "--reached_out", help="Whether the company has reached out or not"
-        )
+def argparsed():
+    parser = argparse.ArgumentParser(description="get db entries")
+    parser.add_argument("--company_name", help="the company name of the job you just applied to")
+    parser.add_argument("--position", help="the position applied to")
+    parser.add_argument("--moved_on", help="whether the company has said they've moved on with other candidates")
+    parser.add_argument("--follow_up", help="whether you've done a followup with the company")
+    parser.add_argument("--reached_out", help="whether the company has reached out to me or not")
+    args = parser.parse_args()
 
-        args = self.parser.parse_args()
-        self.company_name = args.company_name
-        self.position = args.position
-        self.moved_on = args.moved_on
-        self.follow_up = args.follow_up
-        self.reached_out = args.reached_out
+    company_name = args.company_name
+    position = args.position
+    moved_on = args.moved_on
+    follow_up = args.follow_up
+    reached_out = args.reached_out
 
-    def __new__(self):
-        return [
-            self.company_name,
-            self.position,
-            self.moved_on,
-            self.follow_up,
-            self.reached_out,
-        ]
+    return company_name, position, moved_on, follow_up, reached_out
 
 
-argparsed = ArgParsed()
+argparser = argparsed()
 
 
 class DataBase:
@@ -44,6 +30,7 @@ class DataBase:
     def __init__(self):
         if DataBase.conn is None:
             try:
+
                 DataBase.conn = psycopg2.connect(
                     database="zougyhdf",
                     user="zougyhdf",
@@ -58,9 +45,10 @@ class DataBase:
                 print("Connection Established")
 
     def drop_table(self):
-        DataBase.cur.execute("DROP TABLE jobhunt")
+        DataBase.cur.execute("DROP TABLE IF EXISTS jobhunt")
         DataBase.conn.commit()
-
+        print("Table Dropped")
+    
     def create_table(self):
         DataBase.cur.execute(
             """
@@ -72,24 +60,27 @@ class DataBase:
             REACHED_OUT BOOL
         )"""
         )
-        DataBase.commit()
+        DataBase.conn.commit()
+        print("Table Created")
 
     def insert_data(self):
         DataBase.cur.execute(
             "INSERT INTO jobhunt (COMPANY, POSITION, MOVED_ON, FOLLOW_UP, REACHED_OUT) VALUES(%s, %s, %s, %s, %s)",
             (
-                ArgParsed.__new__()[0],
-                ArgParsed.__new__()[1],
-                ArgParsed.__new__()[2],
-                ArgParsed.__new__()[3],
-                ArgParsed.__new__()[4],
+                argparser[0],
+                argparser[1],
+                argparser[2],
+                argparser[3],
+                argparser[4],
             ),
         )
         DataBase.conn.commit()
-
+        print("Data inserted successfully")
+    
     def get_all_data(self):
         DataBase.cur.execute("SELECT * FROM jobhunt")
-
+        print("Data Got")
+    
     def get_data(self, company_name):
         # for whatever reason you need to put single qoutes around the format curly braces
         DataBase.cur.execute(
@@ -103,10 +94,7 @@ class DataBase:
             print(f"Moved on or not: {row[2]}")
             print(f"If you've followed up with the company: {row[3]}")
             print(f"Reached out or not: {row[4]}")
-
-    # if no argument is passed on the command line this still works as there's a placeholder value of None
-    # get_data(argparsed()[0])
-
+    
     def update_data(
         self, column_name, company_name, position, moved_on, follow_up, reached_out
     ):
@@ -130,9 +118,21 @@ class DataBase:
                 f"UPDATE jobhunt SET REACHED_OUT={reached_out} WHERE {column_name}='{company_name}'"
             )
             print("updated reached out column for row {company_name}")
-
-    def del_data(column_name, company_name):
+    
+    def del_data(self, column_name, company_name):
         # deletes a row where the condition is true. 'WHERE' is the condition or if statement essentially
         DataBase.cur.execute(f"DELETE FROM jobhunt WHERE {column_name}='{company_name}'")
         print(f"The rows affected are: {DataBase.cur.rowcount}")
         DataBase.conn.commit()
+
+
+database = DataBase()
+database.drop_table()
+database.create_table()
+database.insert_data()
+database.get_all_data()
+# must either have Trevor as a company name or if dropping the table beforehand
+# call "Trevor" as a company name
+database.get_data("Trevor")
+database.update_data("COMPANY", "Trevor", "trev", "trev", None, None)
+database.del_data("COMPANY", "Trevor")
